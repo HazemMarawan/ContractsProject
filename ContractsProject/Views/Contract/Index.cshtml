@@ -1,0 +1,156 @@
+﻿@model IEnumerable<ContractsProject.Models.Contract>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+@{ int counter = 1;}
+<div class="page-container">
+
+    <div class="page-content-wrapper">
+
+        <div class="page-head">
+            <div class="container">
+
+                <div class="page-title">
+                    <h1>
+                        أداره الملفات
+                        <small>هذه الملفات تم إدخالها مسبقاً</small>
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="container">
+
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="@Url.Action("Index","Contract")">اداره الملفات</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index","Contract")">الصفحه الرئيسية</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+
+                </ul>
+
+                <div class="page-content-inner">
+                    <div class="row">
+                        <div class="col ">
+
+                            <div class="portlet light ">
+                                <div class="portlet-title">
+                                    <div class="caption font-red-sunglo">
+                                        <i class="icon-settings font-red-sunglo"></i>
+                                        <span class="caption-subject bold uppercase">بحث عن ملف</span>
+                                        <a href="@Url.Action("Add","Contract")">(اضافه ملف جديد)</a>
+                                    </div>
+
+                                </div>
+                                @if (@ViewBag.DeleteMsg != null)
+                                {
+                                    <div class="alert alert-info bold" role="alert">
+                                        @ViewBag.DeleteMsg
+                                    </div>
+                                }
+                                <div class="portlet-body form">
+                                    <table class="table table-striped" id="fileTblId">
+                                        <tr>
+                                            <th>
+                                                #
+                                            </th>
+                                            <th>
+                                                أسم العميل
+                                            </th>
+
+                                            <th>
+                                                الرقم القومي
+                                            </th>
+
+                                            <th></th>
+                                        </tr>
+
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @counter
+                                                </td>
+                                                <td>
+                                                    @item.ClientName
+                                                </td>
+
+                                                <td>
+                                                    @item.ClienId
+                                                </td>
+
+
+                                                <td>
+
+                                                    <a href="Contract/Delete/@item.contractId">حذف</a>
+                                                </td>
+                                            </tr>
+                                            counter++;
+                                        }
+
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#fileTblId').DataTable();
+    });
+    $(document).ready(function () {
+
+
+        $('#fileTblId').DataTable({
+            "language": {
+                "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                "sLoadingRecords": "جارٍ التحميل...",
+                "sProcessing": "جارٍ التحميل...",
+                "sLengthMenu": "أظهر _MENU_ مدخلات",
+                "sZeroRecords": "لم يعثر على أية سجلات",
+                "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                "sInfoPostFix": "",
+                "sSearch": "ابحث:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "الأول",
+                    "sPrevious": "السابق",
+                    "sNext": "التالي",
+                    "sLast": "الأخير"
+                },
+                "oAria": {
+                    "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                    "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                }
+            }
+        });
+    });
+
+</script>

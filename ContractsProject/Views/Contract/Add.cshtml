@@ -1,0 +1,589 @@
+﻿@model ContractsProject.Models.Contract
+
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+
+<div class="page-container">
+
+    <div class="page-content-wrapper">
+
+        <div class="page-head">
+            <div class="container">
+
+                <div class="page-title">
+                    <h1>
+                        تسجيل عقد جديد
+                        <small>تسجيل العقد و اضافه الاراضي الخاصه به</small>
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="container">
+
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="@Url.Action("Index","Contract")">اداره الملفات</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Add","Contract")">تسجيل ملف جديد</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+
+                </ul>
+
+                <div class="page-content-inner">
+                    <div class="row">
+                        <div class="col ">
+
+                            <div class="portlet light ">
+                                <div class="portlet-title">
+                                    <div class="caption font-red-sunglo">
+                                        <i class="icon-settings font-red-sunglo"></i>
+                                        <span class="caption-subject bold uppercase"> تسجيل عقد جديد</span>
+                                    </div>
+
+                                </div>
+
+                                <div class="portlet-body form">
+                                    @if (@ViewBag.AddError != null)
+                                    {
+                                        <div class="alert alert-danger bold" role="alert">
+                                            @ViewBag.AddError
+                                        </div>
+                                    }
+                                    @using (Html.BeginForm("Add", "Contract", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                                        <div class="form-group">
+                                            <label>نوع الملف</label>
+                                            <div class="mt-radio-inline">
+                                                <label class="mt-radio">
+                                                    <input type="radio" name="ContractType" value="1" checked> ملفات وزاره الزراعه
+                                                    <span></span>
+                                                </label>
+                                                <label class="mt-radio">
+                                                    <input type="radio" name="ContractType" value="2"> طلب
+                                                    <span></span>
+                                                </label>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="bold">اسم العميل</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class=""></i>
+                                                </span>
+                                                @Html.TextBoxFor(m => m.ClientName,new { @class="form-control"})
+                                                @Html.ValidationMessage("ClientName", "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+                                        <input type="hidden" value="hassan" name="hiddenhassan" />
+                                        <div class="form-group">
+                                            <label class="bold">نوع العميل</label>
+                                            <select class="form-control" name="ClientType">
+                                                <option value="Person">شخص</option>
+                                                <option value="Company">شركة</option>
+                                                <option value="Gam3ia">جمعية</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="bold">الرقم القومي</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class=""></i>
+                                                </span>
+                                                @Html.TextBoxFor(m => m.ClienId, new { @class = "form-control", @placeholder = "الرقم القومي" })
+                                                <input required type="file" name="nationalIdPhotos" multiple id="nidgallery-photo-add" />
+                                             
+                                                <input type="button" class="btn btn-info btn-sm" value="عرض" onclick="showNationalId(this)" id="showNatBtn">
+                                                <div class="nidgallery"></div>
+                                                @Html.ValidationMessage("ClienId", "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="bold"> رقم تسجيل الجمعية</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class=""></i>
+                                                </span>
+                                                @Html.TextBoxFor(m => m.assossicationNumber, new { @class = "form-control", @placeholder = "السجل التجاري / رقم تسجيل الجمعية" })
+                                                @Html.ValidationMessage("assossicationNumber", "", new { @class = "text-danger" })
+
+                                            </div>
+                                            <div class="input-group">
+                                                <label class="bold"> السجل التجاري</label>
+                                                <input required type="file" class="form-control" value="رفع" name="commercialRegisterFiles" multiple id="commercialRegistergallery-photo-add">
+                                                <div class="commercialRegistergallery"></div>
+                                                <input type="button" class="form-control btn btn-primary" value="عرض" id="showCommRegGalBtn" onclick="showcommercialRegistergallery()">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <fieldset>
+                                                <legend>بيانات الأتصال</legend>
+                                                <label class="bold">الهاتف</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class=""></i>
+                                                    </span>
+                                                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = "الهاتف" })
+                                                    @Html.ValidationMessage("Phone", "", new { @class = "text-danger" })
+
+                                                </div>
+
+                                                <label class="bold"> المحمول</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class=""></i>
+                                                    </span>
+                                                    @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control", @placeholder = "المحمول" })
+                                                    @Html.ValidationMessage("Mobile", "", new { @class = "text-danger" })
+
+                                                </div>
+                                                <label class="bold"> البريد الألكتروني</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class=""></i>
+                                                    </span>
+                                                    @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", @placeholder = "البريد الألكتروني" })
+                                                    @Html.ValidationMessage("EmailAddress", "", new { @class = "text-danger" })
+
+                                                </div>
+                                                <label class="bold"> عنوان الرساله</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class=""></i>
+                                                    </span>
+                                                    @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", @placeholder = "عنوان الرساله" })
+                                                    @Html.ValidationMessage("Subject", "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="form-group">
+                                            <fieldset>
+                                                <legend class="bold">بيانات قطع الأراضي </legend>
+                                                <div class="form-group">
+
+                                                    <label class="bold">الوصف</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class=""></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" placeholder="الوصف" name="descForm" id="descFormId">
+                                                    </div>
+
+                                                    <label class="bold">س</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class=""></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" placeholder="س" name="senForm" id="senFormId">
+                                                    </div>
+                                                    <label class="bold">ط</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class=""></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" placeholder="ط" name="tahForm" id="tahFormId">
+                                                    </div>
+                                                    <label class="bold">ف</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class=""></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" placeholder="ف" name="fehForm" id="fehFormId">
+                                                    </div>
+                                                    <input class="btn btn-info" value="اضافه بيانات القطعة" type='button' onclick="openNewPieceOfGround()" />
+
+
+                                                </div>
+                                                <table class="table" id="pieceOfGuardTbl">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>الوصف</th>
+                                                            <th>س</th>
+                                                            <th>ط</th>
+                                                            <th>ف</th>
+                                                            <!--
+                                                                <th>سند المكلية</th>
+                                                                <th>تقرير اللجنه</th>
+                                                                <th>رد العميل</th>
+                                                            -->
+                                                            <th>استكمال البيانات</th>
+
+                                                            <th style="display:none;">الموقع</th>
+                                                            <th style="display:none;">رقم القطعة</th>
+                                                            <th style="display:none;">كيفية التملك</th>
+                                                            <th style="display:none;">رقم الملف</th>
+                                                            <th style="display:none;">القرار</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tblBody">
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </fieldset>
+                                            <div id="pieceOfGroundDataId">
+                                                <div class="form-group">
+                                                    <label for="LocId">الموقع</label>
+                                                    <input class="form-control" placeholder="الموقع" type='text' id="LocId" name='Location' />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="PieceNumId">رقم القطعة</label>
+                                                    <input class="form-control" placeholder="رقم القطعة" type='text' id="PieceNumId" name='PieceNum' />
+                                                </div>
+                                                <!--<div class="form-group">
+                                                    <label for="PieceDocId"> 	سند الملكية</label>
+                                                    <input class="form-control" type='file' id="PieceDocId" name='PieceDoc' />
+                                                    <input type="button" value="رفع" class="btn btn-success" />
+                                                    <input type="button" value="عرض" class="btn btn-primary" />
+                                                </div>-->
+                                                <div class="form-group">
+                                                    <label for="HowOwnId">كيفية التملك</label>
+                                                    <input class="form-control" placeholder="كيفية التملك" type='text' id="HowOwnId" name='HowOwn' />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="DoumentNumId">رقم الملف</label>
+                                                    <input class="form-control" placeholder="رقم الملف" type='text' id="DoumentNumId" name='DoumentNum' />
+                                                </div>
+                                                <!--<div class="form-group">
+                                                    <label for="lgnaDecision">تقرير اللجنه</label>
+                                                    <input type="button" value="رفع" class="btn btn-success" />
+                                                    <input type="button" value="عرض" class="btn btn-primary" />
+                                                </div>-->
+                                                <div class="form-group">
+                                                    <label for="DecisionId">القرار</label>
+                                                    <input class="form-control" placeholder="القرار" type='text' id="DecisionId" name='Decision' />
+                                                </div>
+                                                <!--<div class="form-group">
+                                                    <label for="lgnaDecision">رد العميل</label>
+                                                    <input class="form-control" type='file' id="clientReplyId" name='clientReply' />
+                                                    <input type="button" value="رفع" class="btn btn-success" />
+                                                    <input type="button" value="عرض" class="btn btn-primary" />
+                                                </div>-->
+                                                <div id="pieceDocsDivId">
+                                                </div>
+                                                <div id="CommitteeReportDocsDivId">
+                                                </div>
+                                                <div id="ClientReplyDocsDivId">
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type='hidden' id="hiddenRowId" />
+                                                    <input class="btn btn-info" value="اضافه بيانات القطعه" type='button' onclick="addPieceDataToTable()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <fieldset>
+                                            <legend class="bold">تسلسل الملكية </legend>
+                                            <div class="form-group">
+
+                                                <label class="bold">الطرف الأول</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class=""></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" placeholder="الطرف الاول" name="clientOneName" id="clientOneId">
+                                                </div>
+
+                                                <label class="bold"> الطرف الثاني</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class=""></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" placeholder="الطرف الثاني" name="clientTwoName" id="clientTwoId">
+                                                </div>
+                                                <input class="btn btn-info" value="اضافه التسلسل" type='button' onclick="addNewContract()" />
+                                            </div>
+                                            <table class="table" id="tslsolTablesId">
+
+                                                <thead>
+                                                    <tr>
+                                                        <th>طرف أول</th>
+                                                        <th>طرف ثاني</th>
+                                                        <th>رفع مستند</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tslolMlkiaBody">
+                                                   
+                                                </tbody>
+                                            </table>
+                                        </fieldset>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn blue">حفظ</button>
+                                            <button type="button" class="btn default">الغاء</button>
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</div>
+<script>
+
+    $(document).ready(function () {
+        $("#pieceOfGroundDataId").hide();
+
+        $('#pieceOfGuardTbl,#tslsolTablesId').DataTable({
+            "language": {
+                "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                "sLoadingRecords": "جارٍ التحميل...",
+                "sProcessing": "جارٍ التحميل...",
+                "sLengthMenu": "أظهر _MENU_ مدخلات",
+                "sZeroRecords": "لم يعثر على أية سجلات",
+                "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                "sInfoPostFix": "",
+                "sSearch": "ابحث:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "الأول",
+                    "sPrevious": "السابق",
+                    "sNext": "التالي",
+                    "sLast": "الأخير"
+                },
+                "oAria": {
+                    "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                    "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                }
+            }
+        });
+    });
+    $("div.nidgallery").hide();
+    $("div.commercialRegistergallery").hide();
+    var counterId = 0;
+    function openNewPieceOfGround() {
+        counterId++;
+        var desc = $("#descFormId").val();
+        var sen = $("#senFormId").val();
+        var tah = $("#tahFormId").val();
+        var feh = $("#fehFormId").val();
+
+
+        var htmlRow = "<tr>";
+        htmlRow += "<td >" + desc + "<input type='hidden' name='Desc' value='" + desc + "'  /></td>";
+        htmlRow += "<td >" + feh + "<input type='hidden' name='Fdan' value='" + feh + "'  /></td>";
+        htmlRow += "<td >" + tah + "<input type='hidden'  name='Eirat'  value='" + tah + "'  /></td>";
+        htmlRow += "<td >" + sen + "<input type='hidden'  name='Sahm'  value='" + sen + "'  /></td>";
+
+        //htmlRow += "<td ><input type='file' name='PieceDoc'  id='PieceDoc" + counterId + "' /></td>";
+        //htmlRow += "<td ><input type='file' name='CommitteeReport'  id='CommitteeReport" + counterId + "' /></td>";
+        //htmlRow += "<td ><input type='file' name='ClientReply'  id='ClientReply" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='button' class='btn btn-primary' name='Decision' value='أختيار' onClick='savePieceData(" + counterId + ")' /></td>";
+
+        htmlRow += "<td ><input type='hidden'  name='Location' id='Location" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='hidden' name='PieceNum'  id='PieceNum" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='hidden' name='HowOwn'  id='HowOwn" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='hidden' name='DoumentNum'  id='DoumentNum" + counterId + "'  /></td>";
+        htmlRow += "<td ><input type='hidden' name='Decision'  id='Decision" + counterId + "' /></td>";
+        htmlRow += "</tr >";
+        $("#tblBody").append(htmlRow);
+
+        var desc = $("#descFormId").val("");
+        var sen = $("#senFormId").val("");
+        var tah = $("#tahFormId").val("");
+        var feh = $("#fehFormId").val("");
+    }
+    function openNewRow() {
+        counterId++;
+        console.log(counterId);
+        var htmlRow = "<tr>";
+        htmlRow += "<td ><input type='text' name='Desc'  /></td>";
+        htmlRow += "<td ><input type='text' name='Fdan'  /></td>";
+        htmlRow += "<td ><input type='text'  name='Eirat'  /></td>";
+        htmlRow += "<td ><input type='text'  name='Sahm'  /></td>";
+        htmlRow += "<td ><input type='hidden'  name='Location' id='Location" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='hidden' name='PieceNum'  id='PieceNum" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='file' name='PieceDoc'  id='PieceDoc" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='hidden' name='HowOwn'  id='HowOwn" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='hidden' name='DoumentNum'  id='DoumentNum" + counterId + "'  /></td>";
+        htmlRow += "<td ><input type='hidden' name='Decision'  id='Decision" + counterId + "' /></td>";
+        htmlRow += "<td ><input type='button' class='btn btn-primary' name='Decision' value='أختيار' onClick='savePieceData(" + counterId + ")' /></td>";
+        htmlRow += "</tr >";
+        $("#tblBody").append(htmlRow);
+    }
+    function savePieceData(rowId) {
+
+        $("#hiddenRowId").val(rowId);
+        $('div[name ="pieceDocFormGroup"]').hide();
+        $('div[name ="CommitteeReportFormGroup"]').hide();
+        $('div[name ="ClientReplyFormGroup"]').hide();
+        
+        
+        var PieceDochtmlCode = '<div class="form-group" id="pieceDocInput' + rowId+'" name="pieceDocFormGroup">';
+        PieceDochtmlCode += '<label for="PieceDoc' + rowId + '">سند الملكية</label>';
+        PieceDochtmlCode += "<input type='file' name='PieceDoc'  id='PieceDoc" + rowId + "' />";
+        PieceDochtmlCode += '</div>';   
+        var CommitteeReporthtmlCode = '<div class="form-group" id="CommitteeReportDocInput' + rowId + '" name="CommitteeReportFormGroup">';
+        CommitteeReporthtmlCode += '<label for="CommitteeReport' + rowId + '">تقرير اللجنه</label>';
+        CommitteeReporthtmlCode += "<input type='file' name='CommitteeReport'  id='CommitteeReport" + rowId + "' />";
+        CommitteeReporthtmlCode += '</div>'; 
+        var ClientReplyhtmlCode = '<div class="form-group" id="ClientReplyDocInput' + rowId + '" name="ClientReplyFormGroup">';
+        ClientReplyhtmlCode += '<label for="ClientReply' + rowId + '">رد العميل</label>';
+        ClientReplyhtmlCode += "<input type='file' name='ClientReply'  id='ClientReply" + rowId + "' />";
+        ClientReplyhtmlCode += '</div>'; 
+        $("#pieceDocsDivId").append(PieceDochtmlCode);
+        $("#CommitteeReportDocsDivId").append(CommitteeReporthtmlCode);
+        $("#ClientReplyDocsDivId").append(ClientReplyhtmlCode);
+       
+        $("#pieceOfGroundDataId").show();
+    }
+
+    function addPieceDataToTable() {
+        var rowId = $("#hiddenRowId").val();
+        $("#Location" + rowId).val($("#LocId").val());
+        $("#PieceNum" + rowId).val($("#PieceNumId").val());
+        //$("#PieceDoc" + rowId).val($("#PieceDocId").val());
+        $("#HowOwn" + rowId).val($("#HowOwnId").val());
+        $("#DoumentNum" + rowId).val($("#DoumentNumId").val());
+        $("#Decision" + rowId).val($("#DecisionId").val());
+
+        //$("#PieceDoc" + rowId).val();
+
+
+        $("#pieceOfGroundDataId").hide();
+        $("#LocId").val("");
+        $("#PieceNumId").val("");
+        $("#PieceDocId").val("");
+        $("#HowOwnId").val("");
+        $("#DoumentNumId").val("");
+        $("#DecisionId").val("");
+
+    }
+    function addNewContract() {
+
+        var ClientOne = $("#clientOneId").val();
+        var ClientTwo = $("#clientTwoId").val();
+
+        var htmlRow = "<tr>";
+        htmlRow += "<td >" + ClientOne + "<input type='hidden' name='clientOne' value='" + ClientOne + "'></td>";
+        htmlRow += "<td >" + ClientTwo + "<input type='hidden' name='clientTwo' value='" + ClientTwo + "'></td>";
+        htmlRow += "<td ><input type='file' name='contractTwoClients' id='ownerSeqFile'></td>";
+        
+        htmlRow += "</tr>";
+        $("#tslolMlkiaBody").append(htmlRow);
+        var ClientOne = $("#clientOneId").val("");
+        var ClientTwo = $("#clientTwoId").val("");
+    }
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#natioalIdImg').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("#natIdSel").change(function () {
+        readURL(this);
+    });
+  
+        // Multiple images preview in browser
+    function imagesPreview (input, placeToInsertImagePreview) {
+
+            if (input.files) {
+                var filesAmount = input.files.length;
+
+                for (i = 0; i < filesAmount; i++) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (event) {
+                        $($.parseHTML('<img>')).attr('src', event.target.result).attr('width', 200).appendTo(placeToInsertImagePreview);
+                    }
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+
+        }
+
+        $('#nidgallery-photo-add').on('change', function () {
+            imagesPreview(this, 'div.nidgallery');
+        });
+  
+        $('#commercialRegistergallery-photo-add').on('change', function () {
+            imagesPreview(this, 'div.commercialRegistergallery');
+        });
+
+      
+    var nicurrentStatus = "Hide";
+    function showNationalId() {
+        $("div.nidgallery").toggle();
+        if (nicurrentStatus == "Hide") {
+            $("#showNatBtn").val("اخفاء");
+            nicurrentStatus = "Show";
+        }
+        else {
+            $("#showNatBtn").val("عرض");
+            nicurrentStatus = "Hide";
+        }
+        
+      
+    }
+    var commercialRegistergallery = "Hide";  
+    function showcommercialRegistergallery() {
+        $("div.commercialRegistergallery").toggle();
+        if (commercialRegistergallery == "Hide") {
+            $("#showCommRegGalBtn").val("اخفاء");
+            commercialRegistergallery = "Show";
+        }
+        else {
+            $("#showCommRegGalBtn").val("عرض");
+            commercialRegistergallery = "Hide";
+        }
+
+
+    }
+
+
+   
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/custom-validator")
+}
